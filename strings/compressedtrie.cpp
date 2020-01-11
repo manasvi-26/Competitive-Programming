@@ -18,59 +18,50 @@ typedef vector <pair<ll,ll>> ii;        // Vector of pairs
 // ordered_set adds two new functions to set - (set).find_by_order([kth element based on zero indexing]) and order_of_key()
 // order_of_key returns number of elements less that parameter. If element exists, that order is its index
 #define ordered_set tree < ll ,  null_type ,  less<ll> ,  rb_tree_tag ,  tree_order_statistics_node_update >
+#define ALPHA 26
 
-class SegmentTree
+class Node
 {
-    private:
-        vi arr;
-        ll n;
     public:
-        SegmentTree(vi &in)
-        {
-            n = in.size();
-            arr.resize(2 * n);
-            for (int i = 0; i < n; i++)
-                arr[i + n] = in[i];
-            
-            for (int i = n - 1; i > 0; i--)
-                arr[i] = arr[i << 1LL] + arr[(i << 1LL) + 1];
-        }
+        map<pair<ll,ll>,ll> count;
+        map<pair<ll,ll>, Node*> next;
+};
 
-        void modify(ll pos, ll val)
-        {
-            pos += n;
-            for (arr[pos] = val; pos > 1; pos >>= 1)
-                arr[pos >> 1] = arr[pos] + arr[pos ^ 1];
-        }
+class Trie
+{
+    public:
+        Node *root;
+    
+    Trie()
+    {
+        root = new Node;
+    }
 
-        ll query(ll l, ll r)
+    void Insert(string str)
+    {
+        auto current = root;
+        ll sz = str.size();
+        for (int i = 0; i < sz; i++)
         {
-            ll res = 0;
-            for (l += n, r += n; l < r; l >>= 1, r >>= 1)
-            {
-                if (l & 1)
-                    res += arr[l++];
-                if (r & 1)
-                    res += arr[--r];
-            }
-            return res;
+            current->count[{str[i], str[sz - i - 1]}]++;
+            if (current->next[{str[i], str[sz - i - 1]}] == NULL && i != sz - 1)
+                current->next[{str[i], str[sz - i - 1]}] = new Node;
+            current = current->next[{str[i], str[sz - i - 1]}];
         }
+    }
+
+    void DeleteAll(Node *current)
+    {
+        for (auto i = current->next.begin(); i != current->next.end(); i++)
+        {
+            if (i->ss != NULL)
+                DeleteAll(i->ss);
+        }
+        delete(current);
+    }
 };
 
 int main(void)
 {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-
-    ll n;
-    cin >> n;
-    vi in(n);
-    for (int i = 0; i < n; i++)
-        cin >> in[i];
     
-    SegmentTree st(in);
-
-    cout << st.query(1, n) << "\n";
-    st.modify(n, 0);
-    cout << st.query(3, n) << "\n";    
 }

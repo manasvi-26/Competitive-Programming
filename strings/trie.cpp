@@ -19,94 +19,61 @@ typedef vector <pair<ll,ll>> ii;        // Vector of pairs
 // order_of_key returns number of elements less that parameter. If element exists, that order is its index
 #define ordered_set tree < ll ,  null_type ,  less<ll> ,  rb_tree_tag ,  tree_order_statistics_node_update >
 #define ALPHA 26
-#define digit(a) (a - 'a')
+#define alpha(a) (a - 'a')
 
 class Node
 {
     public:
         ll count[ALPHA];
         Node *next[ALPHA];
-    
-    Node()
-    {
-        for (auto it: next)
-            it = NULL;
-        for (auto it: count)
-            it = NULL;
-    }
+
+        Node()
+        {
+            for (int i = 0; i < ALPHA; i++)
+                count[i] = 0, next[i] = NULL;
+        }
 };
 
 class Trie
 {
     public:
         Node *root;
-        Trie()
-        {
-            root = new Node;
-        }
-
-        void Insert(string in)
-        {
-            auto current = root;
-            for (auto it: in)
-            {
-                current->count[digit(it)]++;
-                if (!current->next[digit(it)] && it != in[in.size() - 1])
-                    current->next[digit(it)] = new Node;
-                current = current->next[digit(it)];
-            }
-        }
-
-        void DeleteAll(Node *current)
-        {
-            for (auto it: current->next)
-                if (it != NULL)
-                    DeleteAll(it);
-            delete(current);
-        }
-
-        ~Trie()
-        {
-            DeleteAll(root);
-        }
-};
-
-Trie s;
-
-ll solve()
-{
-    ll count = 0;
-    for (int i = 0; i < 26; i++)
+    
+    Trie()
     {
-        while(s.root->count[i] >= 2)
+        root = new Node;
+    }
+
+    void Insert(string str)
+    {
+        auto current = root;
+        ll sz = str.size();
+        for (int i = 0; i < sz; i++)
         {
-            ll check = 0;
-            Node *tmp = s.root;
-            tmp->count[i] -= 2;
-            check++;
-            for (int i = 0; i < 26; i++)
+            current->count[alpha(str[i])]++;
+            if (current->next[alpha(str[i])] == NULL && i != sz - 1)
+                current->next[alpha(str[i])] = new Node;
+            current = current->next[alpha(str[i])];
         }
     }
-}
+
+    void DeleteAll(Node *current)
+    {
+        for (auto i = 0; i < ALPHA; i++)
+        {
+            if (current->next[i] != NULL)
+                DeleteAll(current->next[i]);
+        }
+        free(current);
+    }
+
+    ~Trie()
+    {
+        DeleteAll(root);
+    }
+};
 
 int main(void)
 {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-
-    ll t;
-    cin >> t;
-    while(t--)
-    {
-        ll n;
-        cin >> n;
-
-        for (int i = 0; i < n; i++)
-        {
-            string x;
-            s.Insert(x);
-        }
-        
-        s.DeleteAll(s.root);
-    }
+    
 }
